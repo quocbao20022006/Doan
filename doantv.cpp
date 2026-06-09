@@ -2117,8 +2117,32 @@ int main() {
 
     // ================= THOAT =================
     else if (chinh == 4) {
-        luuDanhSachDocGia(root);
-        break;
+        veKhung("THOAT CHUONG TRINH");
+
+        ofstream outFile("output.txt", ios::out);
+        gotoXY(khung_X + 5, khung_Y + 5);
+
+        if (!outFile.is_open()) {
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+            cout << ">>> Loi tao file output.txt!";
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        } else {
+            ghiNodeRaFile_NLR(root, outFile);
+            outFile.close();
+
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+            cout << ">>> Da luu du lieu Doc gia vao file output.txt!";
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        }
+
+        gotoXY(khung_X + 5, khung_Y + 7);
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+        cout << "Cam on ban da su dung chuong trinh.";
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+        dungManHinh();
+        xoaManHinh();
+        return 0;
     }
 }
 }
