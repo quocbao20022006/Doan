@@ -1,0 +1,4 @@
+Nguyen,An,Nam,1
+Tran,Binh,Nam,1
+Le,Trang,Nu,1
+Pham,Linh,Nu,0
