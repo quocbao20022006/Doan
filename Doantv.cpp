@@ -91,6 +91,7 @@ vector<DauSach*> goiYSach(string tuKhoa) {
 }
 void gotoXY(int x, int y);
 void veKhung(string title);
+void veKhungCao(string title, int hCanDung);
 void drawDoubleBox(int x, int y, int w, int h, string title);
 void xoaManHinh();
 void anConTro();
@@ -101,6 +102,7 @@ extern int khung_X;
 extern int khung_Y;
 extern int khung_W;
 extern int khung_H;
+extern int dongCuoiNoiDung;
 
 int toaDoX(int xCu);
 int toaDoY(int yCu);
@@ -193,6 +195,7 @@ int layMaTheTuDong() {
 NodeDocGia* timDocGia(NodeDocGia* root, int maThe);
 	void gotoXY(int x, int y);
 	void veKhung(string title);
+	void veKhungCao(string title, int hCanDung);
 	void inDanhSachTheoMaThe(NodeDocGia* root, int &dong);
 	void inDanhSachTheoTenHo(NodeDocGia* root, int &dong);
 	void sapXepTheoTenHo(NodeDocGia* arr[], int n);
@@ -749,28 +752,45 @@ bool themSachVaoDauSach(string ISBN, string viTri) {
 }
 
 void inDanhSachDauSach() {
+    int tongDong = 6;
+
+    if (soLuongDauSach > 0) {
+        for (int i = 0; i < soLuongDauSach; i++) {
+            int soSachCon = 0;
+            for (NodeSach* p = dsDauSach[i]->dms; p != NULL; p = p->next) {
+                soSachCon++;
+            }
+            int h = 8 + (soSachCon > 0 ? soSachCon : 1);
+            tongDong += h + 1;
+        }
+    }
+
+    veKhungCao("DANH SACH CO TRONG KHO", tongDong + 4);
+
     if (soLuongDauSach == 0) {
+        gotoXY(khung_X + 3, khung_Y + 3);
         cout << "Kho sach hien tai dang trong!" << endl;
+        dongCuoiNoiDung = khung_Y + 4;
         return;
     }
-    
-    xoaManHinh();
-    veKhung("DANH SACH CO TRONG KHO");
-    int x = khung_X;
-    int y = khung_Y;
-    int w = khung_W;
+
+    int x = khung_X + 2;
+    int y = khung_Y + 3;
+    int w = khung_W - 4;
+    int gioiHanDuoi = khung_Y + khung_H - 3;
 
     for (int i = 0; i < soLuongDauSach; i++) {
         DauSach* ds = dsDauSach[i];
-        
-       
+
         int soSachCon = 0;
         for (NodeSach* p = ds->dms; p != NULL; p = p->next) {
             soSachCon++;
         }
 
-        int h = 6 + (soSachCon > 0 ? (soSachCon + 1) : 1) + 2; 
+        int h = 8 + (soSachCon > 0 ? soSachCon : 1);
+        if (y + h >= gioiHanDuoi) break;
 
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
         gotoXY(x, y);
         cout << "+";
         for (int j = 1; j < w - 1; j++) cout << "-";
@@ -788,8 +808,10 @@ void inDanhSachDauSach() {
         for (int j = 1; j < w - 1; j++) cout << "-";
         cout << "+";
 
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
         gotoXY(x + 2, y);
         cout << " DAU SACH " << (i + 1) << " ";
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
         gotoXY(x + 3, y + 2);
         cout << "ISBN: " << ds->ISBN;
@@ -803,29 +825,29 @@ void inDanhSachDauSach() {
         int dongHienTai = y + 6;
         if (ds->dms != NULL) {
             gotoXY(x + 3, dongHienTai);
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14); 
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
             cout << "-> Cac cuon sach hien co trong kho:";
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-            
+
             dongHienTai++;
             for (NodeSach* p = ds->dms; p != NULL; p = p->next) {
+                if (dongHienTai >= y + h - 1) break;
                 gotoXY(x + 6, dongHienTai);
-                cout << "+ " << p->MASACH 
-                     << " | VT: " << p->viTri 
+                cout << "+ " << p->MASACH
+                     << " | VT: " << p->viTri
                      << " | TT: ";
-                
+
                 if (p->trangThai == 0) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); 
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
                     cout << "Ranh";
                 } else if (p->trangThai == 1) {
                     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
                     cout << "Da muon";
                 } else {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);  
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
                     cout << "Thanh ly";
                 }
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); 
-                
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
                 dongHienTai++;
             }
         } else {
@@ -838,7 +860,10 @@ void inDanhSachDauSach() {
 
         y += h + 1;
     }
+
+    dongCuoiNoiDung = y;
 }
+
 void inTop10SachMuonNhieu() {
     if (soLuongDauSach == 0) {
         gotoXY(toaDoX(28), toaDoY(4));
@@ -1148,6 +1173,7 @@ int khung_X = 25;
 int khung_Y = 2;
 int khung_W = 70;
 int khung_H = 18;
+int dongCuoiNoiDung = 0;
 
 int toaDoX(int xCu) {
     return khung_X + (xCu - 25);
@@ -1163,39 +1189,52 @@ void gotoxyKhung(int xCu, int yCu) {
 
 
 void drawDoubleBox(int x, int y, int w, int h, string title) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    SetConsoleTextAttribute(hConsole, 11);
     gotoXY(x, y);
-    cout << (unsigned char)218; // ┌
-    for (int i = 1; i < w - 1; i++) cout << (unsigned char)196; // ─
-    cout << (unsigned char)191; // ┐
+    cout << (unsigned char)201;
+    for (int i = 1; i < w - 1; i++) cout << (unsigned char)205;
+    cout << (unsigned char)187;
 
     for (int i = 1; i < h - 1; i++) {
         gotoXY(x, y + i);
-        cout << (unsigned char)179; // │
+        cout << (unsigned char)186;
         gotoXY(x + w - 1, y + i);
-        cout << (unsigned char)179; // │
+        cout << (unsigned char)186;
     }
 
     gotoXY(x, y + h - 1);
-    cout << (unsigned char)192; // └
-    for (int i = 1; i < w - 1; i++) cout << (unsigned char)196; // ─
-    cout << (unsigned char)217; // ┘
+    cout << (unsigned char)200;
+    for (int i = 1; i < w - 1; i++) cout << (unsigned char)205;
+    cout << (unsigned char)188;
+
+    if (h >= 6) {
+        SetConsoleTextAttribute(hConsole, 3);
+        gotoXY(x + 2, y + h - 3);
+        for (int i = 0; i < w - 4; i++) cout << (unsigned char)196;
+    }
 
     if (!title.empty()) {
-        int viTriChu = x + (w - (int)title.length() - 2) / 2;
+        int viTriChu = x + (w - (int)title.length() - 6) / 2;
+        if (viTriChu < x + 2) viTriChu = x + 2;
         gotoXY(viTriChu, y);
-        cout << " " << title << " ";
+        SetConsoleTextAttribute(hConsole, 14);
+        cout << "  " << title << "  ";
     }
+
+    SetConsoleTextAttribute(hConsole, 7);
 }
 
 void veKhung(string title) {
     xoaManHinh();
+    SetConsoleTitleA("QUAN LY THU VIEN - DO AN CTDL");
 
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    
+
     int consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
     int consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-
 
     khung_W = (consoleWidth * 3) / 4;
     khung_H = (consoleHeight * 3) / 4;
@@ -1207,12 +1246,43 @@ void veKhung(string title) {
 
     khung_X = (consoleWidth - khung_W) / 2;
     khung_Y = (consoleHeight - khung_H) / 2;
+    if (khung_Y < 1) khung_Y = 1;
 
     drawDoubleBox(khung_X, khung_Y, khung_W, khung_H, title);
+    dongCuoiNoiDung = khung_Y + 3;
+}
+
+void veKhungCao(string title, int hCanDung) {
+    xoaManHinh();
+    SetConsoleTitleA("QUAN LY THU VIEN - DO AN CTDL");
+
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+    int consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    int consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    khung_W = (consoleWidth * 3) / 4;
+    if (khung_W < 80 && consoleWidth >= 80) khung_W = 80;
+    if (khung_W > consoleWidth - 2) khung_W = consoleWidth - 2;
+
+    khung_H = hCanDung;
+    if (khung_H < 18) khung_H = 18;
+
+    khung_X = (consoleWidth - khung_W) / 2;
+    khung_Y = 1;
+
+    drawDoubleBox(khung_X, khung_Y, khung_W, khung_H, title);
+    dongCuoiNoiDung = khung_Y + 3;
 }
 void dungManHinh() {
     int x = khung_X + 3;
     int y = khung_Y + khung_H - 2;
+
+    if (dongCuoiNoiDung >= y && dongCuoiNoiDung + 1 < khung_Y + khung_H - 1) {
+        y = dongCuoiNoiDung + 1;
+    }
+    if (y > khung_Y + khung_H - 2) y = khung_Y + khung_H - 2;
 
     gotoXY(x, y);
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
@@ -1221,6 +1291,7 @@ void dungManHinh() {
 
     while (_getch() != 13);
 }
+
 void setColor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
@@ -1268,20 +1339,28 @@ void gotoXY(int x, int y) {
 }
 
 void inDongMenu(int x_menu, int y, string text, bool selected) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     gotoXY(x_menu, y);
-    string line = "    " + text;
-    if (selected) line = " >> " + text + " ";
+
+    string line = selected ? "  > " + text + "  " : "    " + text + "  ";
     if ((int)line.length() < khung_W - 10) {
         line += string(khung_W - 10 - line.length(), ' ');
     }
 
     if (selected) {
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 112);
+        SetConsoleTextAttribute(hConsole, 240);
         cout << line;
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        SetConsoleTextAttribute(hConsole, 14);
+        gotoXY(x_menu - 3, y);
+        cout << (unsigned char)175;
     } else {
+        SetConsoleTextAttribute(hConsole, 7);
         cout << line;
+        gotoXY(x_menu - 3, y);
+        cout << " ";
     }
+
+    SetConsoleTextAttribute(hConsole, 7);
 }
 
 int menuUI_pro(string menu[], int n, string title) {
@@ -1291,17 +1370,31 @@ int menuUI_pro(string menu[], int n, string title) {
     anConTro();
     veKhung(title);
 
-    int x_menu = khung_X + 5;
-    int y_start = khung_Y + 3;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    string tenHeThong = "QUAN LY THU VIEN";
+    int titleX = khung_X + (khung_W - (int)tenHeThong.length()) / 2;
+    gotoXY(titleX, khung_Y + 2);
+    SetConsoleTextAttribute(hConsole, 11);
+    cout << tenHeThong;
+
+    string subTitle = "HE THONG QUAN LY THU VIEN";
+    int subX = khung_X + (khung_W - (int)subTitle.length()) / 2;
+    gotoXY(subX, khung_Y + 3);
+    SetConsoleTextAttribute(hConsole, 14);
+    cout << subTitle;
+
+    int x_menu = khung_X + 8;
+    int y_start = khung_Y + 6;
 
     for (int i = 0; i < n; i++) {
         inDongMenu(x_menu, y_start + i, menu[i], i == choice);
     }
 
     gotoXY(khung_X + 5, khung_Y + khung_H - 2);
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-    cout << "Su dung Phim Dieu Huong | Enter De Chon";
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    SetConsoleTextAttribute(hConsole, 8);
+    cout << "Mui ten len/xuong: Di chuyen   |   Enter: Chon";
+    SetConsoleTextAttribute(hConsole, 7);
 
     while (true) {
         int key = _getch();
@@ -1332,7 +1425,10 @@ void printLine(int x, int &y, int w, string text) {
 }
 
 void loadingDots(string text, int repeat = 3, int speed = 25){
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, 11);
     cout << text;
+    SetConsoleTextAttribute(hConsole, 7);
 
     for (int i = 0; i < repeat; i++) {
         for (int j = 0; j < 3; j++) {
@@ -1345,7 +1441,9 @@ void loadingDots(string text, int repeat = 3, int speed = 25){
         cout << "\r" << text << "   " << "\r" << text;
     }
 
-    cout << "...\n";
+    SetConsoleTextAttribute(hConsole, 10);
+    cout << "... OK\n";
+    SetConsoleTextAttribute(hConsole, 7);
 }
 string nhapMaCoGoiY(NodeDocGia* root, string title) {
     string input = "";
@@ -1590,7 +1688,7 @@ int main() {
 		
 		        veKhung("DANH SACH THEO MA");
 		
-		        int dong = 4;
+		        int dong = 5;
 		
 		        inDanhSachTheoMaThe(root, dong);
 		    }
@@ -1598,7 +1696,7 @@ int main() {
 		
 		        veKhung("DANH SACH THEO TEN");
 		
-		        int dong = 4;
+		        int dong = 5;
 		
 		        inDanhSachTheoTenHo(root, dong);
 		    }
