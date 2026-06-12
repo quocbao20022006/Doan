@@ -1,10 +1,5 @@
-DS01,Lap trinh C++,350,Nguyen Van A,2020,Cong nghe
-DS02,Cau truc du lieu,420,Tran Van B,2019,Cong nghe
-DS03,Tri tue nhan tao,300,Le Thi C,2021,Cong nghe
-DS04,Hoc may,380,Pham Van D,2022,Cong nghe
-DS05,Toan roi rac,250,Nguyen Van E,2018,Giao duc
-DS06,He dieu hanh,400,Tran Van F,2020,Cong nghe
-DS07,Mang may tinh,360,Le Van G,2019,Cong nghe
-DS08,Lap trinh Python,330,Pham Thi H,2021,Cong nghe
-DS09,Co so du lieu,370,Nguyen Van I,2022,Cong nghe
-DS10,Thiet ke he thong,390,Tran Thi K,2020,Cong nghe
+CTDL,Cau truc du lieu,350,Nguyen Van A,2022,Cong nghe thong tin
+LTC,Lap trinh C,280,Tran Van B,2021,Cong nghe thong tin
+CSDL,Co so du lieu,320,Le Thi C,2020,Cong nghe thong tin
+TRR,Toan roi rac,260,Pham Van D,2019,Toan hoc
+MMT,Mang may tinh,300,Hoang Van E,2023,Cong nghe thong tin
