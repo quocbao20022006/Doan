@@ -3,3 +3,6 @@ LTC,Lap trinh C,280,Tran Van B,2021,Cong nghe thong tin
 CSDL,Co so du lieu,320,Le Thi C,2020,Cong nghe thong tin
 TRR,Toan roi rac,260,Pham Van D,2019,Toan hoc
 MMT,Mang may tinh,300,Hoang Van E,2023,Cong nghe thong tin
+TEST,TEST,200,TEST,2021,TEST
+TEST1,TEST1,20,TEST1,2000,TEST1
+MH,MH,200,MH,2010,MH

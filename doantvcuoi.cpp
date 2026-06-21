@@ -9,7 +9,7 @@
 #include <windows.h>
 #include <limits>
 #include <vector>
-
+#include <iomanip>
 using namespace std;
 
 struct Ngay {
@@ -533,6 +533,8 @@ void lietKeSachDangMuon(NodeDocGia* root, int maThe) {
     dongCuoiNoiDung = toaDoY(dongIn);
 }
 // =========================================================
+void luuFileSach();
+void luuFileDauSach();
 void timSachTheoTheLoai(string theLoai);
 vector<string> goiYTheLoai(string tuKhoa) {
     vector<string> kq;
@@ -626,139 +628,164 @@ void timSachTheoTheLoai(string theLoai) {
 
     string key = boDau(theLoai);
 
-    int soDauSachKhop = 0;
+    vector<DauSach*> ketQua;
+
     for (int i = 0; i < soLuongDauSach; i++) {
         string tl = boDau(dsDauSach[i]->theLoai);
+
         if (tl.find(key) != string::npos) {
-            soDauSachKhop++;
+            ketQua.push_back(dsDauSach[i]);
         }
     }
 
-    if (soDauSachKhop == 0) {
+    if (ketQua.empty()) {
         xoaManHinh();
         veKhung("KET QUA TIM THE LOAI");
+
         gotoXY(toaDoX(28), toaDoY(4));
         cout << "Khong tim thay the loai hop le!";
-        gotoXY(toaDoX(28), toaDoY(6));
         return;
     }
-    int h_dong = (soDauSachKhop * 6) + 4;
-    if (h_dong < 12) h_dong = 12;
 
-    xoaManHinh();
-    drawDoubleBox(khung_X, khung_Y, khung_W, h_dong, "KET QUA TIM THE LOAI");
+    int hCanDung = (int)ketQua.size() * 7 + 8;
+    if (hCanDung < 18) hCanDung = 18;
 
-    int dongIn = 4;
-    for (int i = 0; i < soLuongDauSach; i++) {
-        string tl = boDau(dsDauSach[i]->theLoai);
+    veKhungCao("KET QUA TIM THE LOAI", hCanDung);
 
-        if (tl.find(key) != string::npos) {
-            DauSach* ds = dsDauSach[i];
+    int dong = 4;
 
-            gotoXY(toaDoX(28), toaDoY(dongIn++));
-            cout << "ISBN    : " << ds->ISBN;
-            
-            gotoXY(toaDoX(28), toaDoY(dongIn++));
-            cout << "Ten     : " << ds->tenSach;
-            
-            gotoXY(toaDoX(28), toaDoY(dongIn++));
-            cout << "Tac gia : " << ds->tacGia;
-            
-            gotoXY(toaDoX(28), toaDoY(dongIn++));
-            cout << "Nam XB  : " << ds->namXB;
-            
-            gotoXY(toaDoX(28), toaDoY(dongIn++));
-            cout << "The loai: " << ds->theLoai;
+    for (int i = 0; i < (int)ketQua.size(); i++) {
+        DauSach* ds = ketQua[i];
 
-            gotoXY(toaDoX(28), toaDoY(dongIn++));
-            cout << "--------------------------";
-        }
+        gotoXY(toaDoX(28), toaDoY(dong++));
+        cout << "ISBN    : " << ds->ISBN;
+
+        gotoXY(toaDoX(28), toaDoY(dong++));
+        cout << "Ten     : " << ds->tenSach;
+
+        gotoXY(toaDoX(28), toaDoY(dong++));
+        cout << "Tac gia : " << ds->tacGia;
+
+        gotoXY(toaDoX(28), toaDoY(dong++));
+        cout << "Nam XB  : " << ds->namXB;
+
+        gotoXY(toaDoX(28), toaDoY(dong++));
+        cout << "The loai: " << ds->theLoai;
+
+        gotoXY(toaDoX(28), toaDoY(dong++));
+        cout << "--------------------------------------------------";
+
+        dong++;
     }
 
-    gotoXY(toaDoX(28), toaDoY(dongIn));
+    dongCuoiNoiDung = toaDoY(dong);
 }
 void timSachTheoTen(string tuKhoa) {
+    xoaManHinh();
     if (soLuongDauSach == 0) {
-        xoaManHinh();
         veKhung("KET QUA TIM KIEM");
         gotoXY(toaDoX(28), toaDoY(4));
         cout << "Kho sach rong!";
+        dongCuoiNoiDung = toaDoY(4);
         return;
     }
-
     string key = boDau(tuKhoa);
-    bool found = false;
-
+    DauSach* dsTimThay = NULL;
     for (int i = 0; i < soLuongDauSach; i++) {
         string ten = boDau(dsDauSach[i]->tenSach);
 
         if (ten.find(key) != string::npos) {
-            found = true;
-            DauSach* ds = dsDauSach[i];
-
-            int soSachCon = 0;
-            for (NodeSach* p = ds->dms; p != NULL; p = p->next) {
-                soSachCon++;
-            }
-
-            int h_dong = 4 + 1 + (soSachCon > 0 ? soSachCon : 1) + 4;
-            if (h_dong < 12) h_dong = 12; 
-
-            xoaManHinh();
-            drawDoubleBox(khung_X, khung_Y, khung_W, h_dong, "KET QUA TIM KIEM");
-
-            gotoXY(toaDoX(28), toaDoY(4));  cout << "ISBN    : " << ds->ISBN;
-            gotoXY(toaDoX(28), toaDoY(5));  cout << "Ten     : " << ds->tenSach;
-            gotoXY(toaDoX(28), toaDoY(6));  cout << "Tac gia : " << ds->tacGia;
-            gotoXY(toaDoX(28), toaDoY(7));  cout << "Nam XB  : " << ds->namXB;
-            gotoXY(toaDoX(28), toaDoY(8));  cout << "The loai: " << ds->theLoai;
-
-            gotoXY(toaDoX(28), toaDoY(10));
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14); 
-            cout << "Danh sach sach con hien co:";
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-
-            int dongIn = 11;
-            if (ds->dms == NULL) {
-                gotoXY(toaDoX(30), toaDoY(dongIn));
-                cout << "(Chua co cuon sach nao trong kho)";
-                dongIn++;
-            } else {
-                for (NodeSach* p = ds->dms; p != NULL; p = p->next) {
-                    gotoXY(toaDoX(30), toaDoY(dongIn));
-                    cout << "- " << p->MASACH
-                         << " | VT: " << p->viTri
-                         << " | TT: ";
-                    
-                    if (p->trangThai == 0) {
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); 
-                        cout << "Ranh";
-                    } else if (p->trangThai == 1) {
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-                        cout << "Da muon";
-                    } else {
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); 
-                        cout << "Thanh ly";
-                    }
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-                    dongIn++;
-                }
-            }
-
-            gotoXY(toaDoX(28), toaDoY(dongIn + 1));
-            break; 
+            dsTimThay = dsDauSach[i];
+            break;
         }
     }
-
-    if (!found) {
-        xoaManHinh();
+    if (dsTimThay == NULL) {
         veKhung("KET QUA TIM KIEM");
         gotoXY(toaDoX(28), toaDoY(4));
         cout << "Khong tim thay sach phu hop!";
-        gotoXY(toaDoX(28), toaDoY(6));
+        dongCuoiNoiDung = toaDoY(4);
+        return;
     }
-}
+    int soSachCon = 0;
+    for (NodeSach* p = dsTimThay->dms; p != NULL; p = p->next) {
+        soSachCon++;
+    }
+    int h_dong = 16 + max(soSachCon, 1);
+    if (h_dong < 15)
+        h_dong = 15;
+    drawDoubleBox(
+        khung_X,
+        khung_Y,
+        khung_W,
+        h_dong,
+        "KET QUA TIM KIEM"
+    );
+    int dong = 4;
+    gotoXY(toaDoX(28), toaDoY(dong++));
+    cout << "ISBN    : " << dsTimThay->ISBN;
+    gotoXY(toaDoX(28), toaDoY(dong++));
+    cout << "Ten     : " << dsTimThay->tenSach;
+    gotoXY(toaDoX(28), toaDoY(dong++));
+    cout << "Tac gia : " << dsTimThay->tacGia;
+    gotoXY(toaDoX(28), toaDoY(dong++));
+    cout << "Nam XB  : " << dsTimThay->namXB;
+    gotoXY(toaDoX(28), toaDoY(dong++));
+    cout << "The loai: " << dsTimThay->theLoai;
+    dong++;
+    SetConsoleTextAttribute(
+        GetStdHandle(STD_OUTPUT_HANDLE),
+        14
+    );
+    gotoXY(toaDoX(28), toaDoY(dong++));
+    cout << "Danh sach sach hien co:";
+    SetConsoleTextAttribute(
+        GetStdHandle(STD_OUTPUT_HANDLE),
+        7
+    );
+    if (dsTimThay->dms == NULL) {
+        gotoXY(toaDoX(30), toaDoY(dong++));
+        cout << "(Chua co cuon sach nao trong kho)";
+    }
+    else {
+        for (NodeSach* p = dsTimThay->dms;
+             p != NULL;
+             p = p->next) {
+            gotoXY(toaDoX(30), toaDoY(dong));
+            cout << "- " << p->MASACH
+                 << " | VT: "
+                 << p->viTri
+                 << " | TT: ";
+            if (p->trangThai == 0) {
+                SetConsoleTextAttribute(
+                    GetStdHandle(STD_OUTPUT_HANDLE),
+                    10
+                );
+                cout << "Ranh";
+            }
+            else if (p->trangThai == 1) {
+                SetConsoleTextAttribute(
+                    GetStdHandle(STD_OUTPUT_HANDLE),
+                    12
+                );
+                cout << "Da muon";
+            }
+            else {
+                SetConsoleTextAttribute(
+                    GetStdHandle(STD_OUTPUT_HANDLE),
+                    8
+                );
+                cout << "Thanh ly";
+            }
 
+            SetConsoleTextAttribute(
+                GetStdHandle(STD_OUTPUT_HANDLE),
+                7
+            );
+            dong++;
+        }
+    }
+    dongCuoiNoiDung = toaDoY(dong);
+}
 int timViTriDauSach(string ISBN) {
     for (int i = 0; i < soLuongDauSach; i++) {
         if (dsDauSach[i]->ISBN == ISBN) {
@@ -790,9 +817,32 @@ bool themDauSach(string ISBN, string tenSach, int soTrang, string tacGia, int na
     
     dsDauSach[soLuongDauSach] = ds;
     soLuongDauSach++;
+    
+    luuFileDauSach();
+    luuFileSach();
     return true;
 }
+void themDauSachTuFile(
+    string ISBN,
+    string tenSach,
+    int soTrang,
+    string tacGia,
+    int namXB,
+    string theLoai)
+{
+    DauSach* ds = new DauSach;
 
+    ds->ISBN = ISBN;
+    ds->tenSach = tenSach;
+    ds->soTrang = soTrang;
+    ds->tacGia = tacGia;
+    ds->namXB = namXB;
+    ds->theLoai = theLoai;
+    ds->soLuotMuon = 0;
+    ds->dms = NULL;
+
+    dsDauSach[soLuongDauSach++] = ds;
+}
 int demSoLuongSachCon(NodeSach* head) {
     int count = 0;
     for (NodeSach* p = head; p != NULL; p = p->next) count++;
@@ -841,7 +891,8 @@ bool themSachVaoDauSach(string ISBN, string viTri) {
         }
         last->next = p;
     }
-    
+    luuFileDauSach();
+    luuFileSach();
     return true;
 }
 
@@ -853,85 +904,101 @@ void inDanhSachDauSach() {
         dongCuoiNoiDung = toaDoY(6);
         return;
     }
-
     DauSach* temp[MAX_DAUSACH];
-    for (int i = 0; i < soLuongDauSach; i++) temp[i] = dsDauSach[i];
-
+    for (int i = 0; i < soLuongDauSach; i++)
+        temp[i] = dsDauSach[i];
     for (int i = 0; i < soLuongDauSach - 1; i++) {
         for (int j = i + 1; j < soLuongDauSach; j++) {
             string tl1 = boDau(temp[i]->theLoai);
             string tl2 = boDau(temp[j]->theLoai);
             string ten1 = boDau(temp[i]->tenSach);
             string ten2 = boDau(temp[j]->tenSach);
-            if (tl1 > tl2 || (tl1 == tl2 && ten1 > ten2)) {
+            if (tl1 > tl2 || (tl1 == tl2 && ten1 > ten2))
                 swap(temp[i], temp[j]);
-            }
         }
     }
-
     int soTheLoai = 0;
-    string theLoaiDem = "";
+    string tlCu = "";
     for (int i = 0; i < soLuongDauSach; i++) {
-        if (i == 0 || boDau(temp[i]->theLoai) != boDau(theLoaiDem)) {
+        if (i == 0 || boDau(temp[i]->theLoai) != boDau(tlCu)) {
             soTheLoai++;
-            theLoaiDem = temp[i]->theLoai;
+            tlCu = temp[i]->theLoai;
         }
     }
-
-    int tongDong = 6 + soLuongDauSach + soTheLoai * 4;
-    veKhungCao("DANH SACH DAU SACH THEO THE LOAI", tongDong);
-
+    int tongDong = 8 + soLuongDauSach + soTheLoai * 5;
+    xoaManHinh();
+    veKhungCao(
+        "DANH SACH DAU SACH THEO THE LOAI",
+        tongDong
+    );
     int x = khung_X + 3;
     int y = khung_Y + 3;
     int maxTen = khung_W - 55;
     if (maxTen < 18) maxTen = 18;
     if (maxTen > 35) maxTen = 35;
-
     string theLoaiHienTai = "";
     for (int i = 0; i < soLuongDauSach; i++) {
         DauSach* ds = temp[i];
-
-        if (i == 0 || boDau(ds->theLoai) != boDau(theLoaiHienTai)) {
+        if (i == 0 ||
+            boDau(ds->theLoai) != boDau(theLoaiHienTai)) {
             theLoaiHienTai = ds->theLoai;
-
-            if (i != 0) y++;
-            if (y + 4 >= khung_Y + khung_H - 2) break;
-
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+            if (i != 0)
+                y++;
+            SetConsoleTextAttribute(
+                GetStdHandle(STD_OUTPUT_HANDLE),
+                14
+            );
             gotoXY(x, y++);
-            cout << "THE LOAI: " << ((theLoaiHienTai.length() > 45) ? theLoaiHienTai.substr(0, 42) + "..." : theLoaiHienTai);
-
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            cout << "THE LOAI: "
+                 << theLoaiHienTai;
+            SetConsoleTextAttribute(
+                GetStdHandle(STD_OUTPUT_HANDLE),
+                11
+            );
             gotoXY(x, y++);
-            cout << "ISBN" << string(12, ' ') << "TEN SACH" << string(maxTen - 7, ' ')
-                 << "TAC GIA" << string(12, ' ') << "NAM  SL";
+            cout << "ISBN"
+                 << string(12, ' ')
+                 << "TEN SACH"
+                 << string(maxTen - 7, ' ')
+                 << "TAC GIA"
+                 << string(12, ' ')
+                 << "NAM  SL";
 
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+            SetConsoleTextAttribute(
+                GetStdHandle(STD_OUTPUT_HANDLE),
+                8
+            );
             gotoXY(x, y++);
             cout << string(khung_W - 8, '-');
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+            SetConsoleTextAttribute(
+                GetStdHandle(STD_OUTPUT_HANDLE),
+                7
+            );
         }
-
-        if (y >= khung_Y + khung_H - 3) break;
-
         string ten = ds->tenSach;
         string tg = ds->tacGia;
         string isbn = ds->ISBN;
-        if ((int)ten.length() > maxTen) ten = ten.substr(0, maxTen - 3) + "...";
-        if ((int)tg.length() > 18) tg = tg.substr(0, 15) + "...";
-        if ((int)isbn.length() > 14) isbn = isbn.substr(0, 11) + "...";
 
-        int soCuon = demSoLuongSachCon(ds->dms);
-        gotoXY(x, y++);
+        if ((int)ten.length() > maxTen)
+            ten = ten.substr(0, maxTen - 3) + "...";
+        if ((int)tg.length() > 18)
+            tg = tg.substr(0, 15) + "...";
+        int soCuon =
+            demSoLuongSachCon(ds->dms);
+        gotoXY(x, y);
         cout << isbn;
-        gotoXY(x + 16, y - 1);
+        gotoXY(x + 16, y);
         cout << ten;
-        gotoXY(x + 18 + maxTen, y - 1);
+        gotoXY(x + 18 + maxTen, y);
         cout << tg;
-        gotoXY(x + 40 + maxTen, y - 1);
-        cout << ds->namXB << "   " << soCuon;
-    }
+        gotoXY(x + 40 + maxTen, y);
+        cout << ds->namXB
+             << "   "
+             << soCuon;
 
+        y++;
+    }
     dongCuoiNoiDung = y;
 }
 
@@ -1247,6 +1314,8 @@ bool muonSach(NodeDocGia* root, int maThe, string maSach) {
     inThanhCongChucNang("=> Muon sach thanh cong!");
     cout << " | Ngay muon: " << ngayThanhChuoi(mtMoi->ngayMuon)
          << " | Dang muon: " << demSachDangMuon(dg) << "/3";
+    luuFileSach();
+    luuFileDauSach();
     return true;
 }
 
@@ -1298,7 +1367,8 @@ bool traSach(NodeDocGia* root, int maThe, string maSach) {
     cout << " | Ngay tra: " << ngayThanhChuoi(mt->ngayTra);
     cout << " | So ngay da muon: " << soNgayDaMuon;
     if (soNgayQuaHan > 0) cout << " | Qua han: " << soNgayQuaHan << " ngay";
-
+	luuFileSach();
+	luuFileDauSach();
     return true;
 }
 // =========================================================
@@ -1373,8 +1443,60 @@ string nhapChuoiTenHopLe(string nhan, int dong) {
         xoaDongNhap(dong);
         gotoXY(toaDoX(28), toaDoY(dong));
         cout << nhan << ": ";
-        getline(cin, s);
-        s = chuanHoaChuoiTenNhap(s);
+        s.clear();
+		char c;
+		
+		while (true) {
+		    c = _getch();
+
+		    if (c == 13) { // Enter
+		        break;
+		    }
+		
+		    if (c == 8) { // Backspace
+		        if (!s.empty()) {
+		            s.pop_back();
+		            cout << "\b \b";
+		        }
+		        continue;
+		    }
+		
+		    if (c == ' ') {
+		        if (s.empty()) {
+		            gotoXY(toaDoX(28), toaDoY(dong + 2));
+		            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+		            cout << "Khong duoc de khoang trang o dau!";
+		            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+		            gotoXY(
+					    toaDoX(28) + (int)nhan.length() + 2 + (int)s.length(),
+					    toaDoY(dong)
+					);
+		            continue;
+		        }
+		
+		        if (s.back() == ' ') {
+		            gotoXY(toaDoX(28), toaDoY(dong + 2));
+		            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+		            cout << "Chi duoc 1 khoang trang giua cac tu!";
+		            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+		            gotoXY(
+					    toaDoX(28) + (int)nhan.length() + 2 + (int)s.length(),
+					    toaDoY(dong)
+					);
+		            continue;
+		        }
+		    }
+
+		    gotoXY(toaDoX(28), toaDoY(dong + 2));
+		    cout << string(khung_W - 8, ' ');
+		    gotoXY(toaDoX(28) + (int)nhan.length() + 2 + (int)s.length(), toaDoY(dong));
+		    if ((int)s.length() < gioiHan) {
+		        s += c;
+		        cout << c;
+		    }
+		}
+		
+		s = chuanHoaChuoiTenNhap(s);
         if (hopLeHoTen(s) && (int)s.length() <= gioiHan) return s;
         gotoXY(toaDoX(28), toaDoY(dong + 2));
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
@@ -1546,7 +1668,6 @@ string nhapISBNHopLe(int dong) {
         xoaDongNhap(dong);
         gotoXY(toaDoX(28), toaDoY(dong)); cout << "ISBN    : ";
         getline(cin, s);
-        s = catKhoangTrang(s);
         for (int i = 0; i < (int)s.length(); i++) {
             s[i] = toupper((unsigned char)s[i]);
         }
@@ -1564,12 +1685,63 @@ string nhapChuoiSachHopLe(string nhan, int dong) {
     int gioiHan = MAX_LEN_TEN_SACH;
     if (tenTruong == "Tac gia") gioiHan = MAX_LEN_TAC_GIA;
     if (tenTruong == "The loai") gioiHan = MAX_LEN_THE_LOAI;
-
     while (true) {
         xoaDongNhap(dong);
         gotoXY(toaDoX(28), toaDoY(dong)); cout << nhan << ": ";
-        getline(cin, s);
-        s = chuanHoaChuoiTenNhap(s);
+        s.clear();
+		char c;
+		
+		while (true) {
+		    c = _getch();
+		
+		    if (c == 13) break; // Enter
+		
+		    if (c == 8) { // Backspace
+		        if (!s.empty()) {
+		            s.pop_back();
+		            cout << "\b \b";
+		        }
+		        continue;
+		    }
+		
+		    if (c == ' ') {
+		
+		        if (s.empty()) {
+		            baoLoiNhapDauSach("Khong duoc de khoang trang o dau");
+		
+		            gotoXY(
+		                toaDoX(28) + (int)nhan.length() + 2 + (int)s.length(),
+		                toaDoY(dong)
+		            );
+		            continue;
+		        }
+		
+		        if (s.back() == ' ') {
+		            baoLoiNhapDauSach("Chi duoc 1 khoang trang giua cac tu");
+		
+		            gotoXY(
+		                toaDoX(28) + (int)nhan.length() + 2 + (int)s.length(),
+		                toaDoY(dong)
+		            );
+		            continue;
+		        }
+		    }
+
+		    gotoXY(toaDoX(28), toaDoY(dong + 2));
+		    cout << string(khung_W - 8, ' ');
+		
+		    gotoXY(
+		        toaDoX(28) + (int)nhan.length() + 2 + (int)s.length(),
+		        toaDoY(dong)
+		    );
+		
+		    if ((int)s.length() < gioiHan) {
+		        s += c;
+		        cout << c;
+		    }
+		}
+		
+		s = chuanHoaChuoiTenNhap(s);
 
         if (hopLeChuoiSach(s) && (int)s.length() <= gioiHan) return s;
 
@@ -1659,7 +1831,7 @@ string nhapISBNTheoTenRealtime(string title) {
         vector<DauSach*> ds = goiYISBNTheoTenHoacISBN(input);
         {
             for (int i = 0; i < (int)ds.size() && i < 7; i++) {
-                string ten = ds[i]->tenSach;
+                string ten = ds[i]->tenSach;	
                 if (ten.length() > 28) ten = ten.substr(0, 25) + "...";
                 gotoXY(toaDoX(28), toaDoY(6 + i)); cout << "- " << ds[i]->ISBN << " | " << ten;
             }
@@ -1794,17 +1966,17 @@ void docDanhSachDocGia(NodeDocGia* &root) {
     }
 
     inFile.close();
-    cout << ">>> Da nap doc gia!\n";
+    
 }
 
 void luuDanhSachDocGia(NodeDocGia* root) {
-    ofstream outFile("output.txt", ios::out);
+    ofstream outFile("docgia.txt", ios::out);
     if (!outFile.is_open()) {
-        cout << "Loi tao file output.txt" << endl; return;
+        return;
     }
+
     ghiNodeRaFile_NLR(root, outFile);
     outFile.close();
-    cout << "Da luu du lieu Doc gia vao file output.txt!" << endl;
 }
 
 void docFileDauSach() {
@@ -1830,11 +2002,11 @@ void docFileDauSach() {
         getline(ss, temp, ','); namXB = stoi(temp);
         getline(ss, theLoai);
 
-        themDauSach(ISBN, tenSach, soTrang, tacGia, namXB, theLoai);
+        themDauSachTuFile(ISBN,tenSach,soTrang,tacGia,namXB,theLoai);
     }
 
     file.close();
-    cout << ">>> Da load Dau Sach tu file!\n";
+    
 }
 void docFileSach() {
     ifstream file("sach.txt");
@@ -1844,20 +2016,95 @@ void docFileSach() {
     }
 
     string line;
-    while (getline(file, line)) {
-        string ISBN, viTri;
+    while (getline(file, line))
+{
+    string ISBN, maSach, trangThaiStr, viTri;
 
-        stringstream ss(line);
-        getline(ss, ISBN, ',');
-        getline(ss, viTri);
+    stringstream ss(line);
 
-        themSachVaoDauSach(ISBN, viTri);
+    getline(ss, ISBN, ',');
+    getline(ss, maSach, ',');
+    getline(ss, trangThaiStr, ',');
+    getline(ss, viTri);
+
+    ISBN = catKhoangTrang(ISBN);
+    maSach = catKhoangTrang(maSach);
+    viTri = catKhoangTrang(viTri);
+
+    int trangThai = stoi(trangThaiStr);
+	int index = timViTriDauSach(ISBN);
+
+if (index != -1)
+{
+    NodeSach* p = new NodeSach;
+
+    p->MASACH = maSach;
+    p->trangThai = trangThai;
+    p->viTri = viTri;
+    p->next = NULL;
+
+    if (dsDauSach[index]->dms == NULL)
+    {
+        dsDauSach[index]->dms = p;
+    }
+    else
+    {
+        NodeSach* q = dsDauSach[index]->dms;
+
+        while (q->next != NULL)
+            q = q->next;
+
+        q->next = p;
+    }
+}
+}
+    file.close();
+}
+void luuFileDauSach()
+{
+    ofstream file("dausach.txt");
+
+    if (!file.is_open())
+        return;
+
+    for (int i = 0; i < soLuongDauSach; i++)
+    {
+        DauSach* ds = dsDauSach[i];
+
+        file << ds->ISBN << ","
+             << ds->tenSach << ","
+             << ds->soTrang << ","
+             << ds->tacGia << ","
+             << ds->namXB << ","
+             << ds->theLoai
+             << endl;
     }
 
     file.close();
-    cout << ">> Da load Sach tu file!\n";
 }
+void luuFileSach()
+{
+    ofstream file("sach.txt", ios::out);
 
+    if (!file.is_open())
+        return;
+
+    for (int i = 0; i < soLuongDauSach; i++)
+    {
+        DauSach* ds = dsDauSach[i];
+
+        for (NodeSach* p = ds->dms; p != NULL; p = p->next)
+        {
+            file << ds->ISBN << ", "
+                 << p->MASACH << ", "
+                 << p->trangThai << ","
+                 << p->viTri
+                 << endl;
+        }
+    }
+
+    file.close();
+}
 // =========================================================
 
 void anConTro() {
@@ -2161,33 +2408,54 @@ void printLine(int x, int &y, int w, string text) {
     cout << "| " << text;
     y++;
 }
-
-void loadingDots(string text, int repeat = 3, int speed = 25){
+void veKhungLoading(int x, int y, int w, int h)
+{
+    gotoXY(x, y);             cout << char(218);
+    gotoXY(x + w - 1, y);     cout << char(191);
+    gotoXY(x, y + h - 1);     cout << char(192);
+    gotoXY(x + w - 1, y + h - 1); cout << char(217);
+    for (int i = 1; i < w - 1; i++) {
+        gotoXY(x + i, y); cout << char(196);
+        gotoXY(x + i, y + h - 1); cout << char(196);
+    }
+    for (int i = 1; i < h - 1; i++) {
+        gotoXY(x, y + i); cout << char(179);
+        gotoXY(x + w - 1, y + i); cout << char(179);
+    }
+}
+void loadingDots(string text, int x, int y,
+                 int repeat = 5, int speed = 50)
+{
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    gotoXY(x, y);
+
     SetConsoleTextAttribute(hConsole, 11);
-    cout << text;
+    cout << left << setw(25) << text;
     SetConsoleTextAttribute(hConsole, 7);
 
     for (int i = 0; i < repeat; i++) {
+        gotoXY(x + 25, y);
+
         for (int j = 0; j < 3; j++) {
             cout << ".";
             Sleep(speed);
         }
 
-        Sleep(25);
-
-        cout << "\r" << text << "   " << "\r" << text;
+        gotoXY(x + 25, y);
+        cout << "   ";
     }
 
+    gotoXY(x + 25, y);
+
     SetConsoleTextAttribute(hConsole, 10);
-    cout << "... OK\n";
+    cout << "... OK";
     SetConsoleTextAttribute(hConsole, 7);
 }
 string nhapMaCoGoiY(NodeDocGia* root, string title) {
     string input = "";
     char c;
 
-    // Dọn sạch bộ đệm bàn phím trước khi bắt đầu bắt phím bằng _getch()
     while (kbhit()) _getch(); 
 
     veKhung(title);
@@ -2336,14 +2604,19 @@ int nhapLuaChonBangEnter(int minVal, int maxVal, int dong) {
 int main() {
     NodeDocGia* root = NULL; 
     khoiTaoKhoMaThe();
-
-	loadingDots("Dang tai doc gia");
+	system("cls");
+	
+	int x = 35;
+	int y = 10;
+	
+	veKhungLoading(x, y, 50, 6);
+	loadingDots("Dang tai doc gia",  x + 3, y + 1);
 	docDanhSachDocGia(root);
-
-	loadingDots("Dang tai dau sach");
+	
+	loadingDots("Dang tai dau sach", x + 3, y + 2);
 	docFileDauSach();
-
-	loadingDots("Dang tai sach");
+	
+	loadingDots("Dang tai sach",     x + 3, y + 3);
 	docFileSach();
 	SetConsoleOutputCP(437);
 
@@ -2396,7 +2669,7 @@ int main() {
 
             int maMoi = layMaTheTuDong();
             themDocGiaVaoCay(root, taoNodeDocGia(maMoi, ho, ten, phai));
-
+			luuDanhSachDocGia(root);
             gotoXY(toaDoX(28), toaDoY(9));
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
             cout << ">>> Them thanh cong! Ma: " << maMoi;
@@ -2420,6 +2693,8 @@ int main() {
 		    int ma = stoi(input);
 		
 		    bool kq = xoaDocGia(root, ma);
+
+		
 		
 		    gotoXY(toaDoX(28), toaDoY(14));
 		
@@ -2450,19 +2725,14 @@ int main() {
 		    if (input.empty()) {
 		        dungManHinh();
 		        continue;
-		    }
-		
+		    }	
 		    int ma = stoi(input);
-		
-		    hieuChinhDocGia(root, ma);
-		
-		    dungManHinh();
+			hieuChinhDocGia(root, ma);
+			luuDanhSachDocGia(root);
+			dungManHinh();
 		}
-
         else if (dg == 3) {
-
 		    veKhung("DANH SACH DOC GIA");
-		
 		    gotoXY(toaDoX(28), toaDoY(4));
 		    cout << "1. Theo ma";
 		
@@ -2529,93 +2799,159 @@ int main() {
             dungManHinh();
         }
             else if (s == 1) {
-                veKhung("NHAP SACH (THEM SACH CON)");
 
-                while (kbhit()) _getch();
-
-                string ISBN = nhapISBNTheoTenRealtime("CHON DAU SACH DE NHAP SACH");
-                veKhung("NHAP SACH (THEM SACH CON)");
-
-                if (ISBN.empty()) {
-                    gotoXY(toaDoX(28), toaDoY(6));
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-                    cout << "Chua chon dau sach!";
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-                }
-                else {
-                    int index = timViTriDauSach(ISBN);
-                    if (index == -1) {
-                        gotoXY(toaDoX(28), toaDoY(6));
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-                        cout << "Khong tim thay ISBN nay!";
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-                    }
-                    else {
-                        gotoXY(toaDoX(28), toaDoY(4));
-                        cout << "ISBN    : " << dsDauSach[index]->ISBN;
-                        gotoXY(toaDoX(28), toaDoY(5));
-                        cout << "Dau sach: " << catTheoKhung(dsDauSach[index]->tenSach);
-
-                        int soCuon = nhapSoNguyenDuongHopLe("So cuon muon them", 7, 1, 100);
-
-                        int dong = 9;
-                        int daThem = 0;
-                        for (int i = 0; i < soCuon; i++) {
-                            if (dong >= khung_Y + khung_H - 5) {
-                                veKhung("NHAP SACH (THEM SACH CON)");
-                                gotoXY(toaDoX(28), toaDoY(4));
-                                cout << "ISBN    : " << dsDauSach[index]->ISBN;
-                                gotoXY(toaDoX(28), toaDoY(5));
-                                cout << "Dau sach: " << catTheoKhung(dsDauSach[index]->tenSach);
-                                dong = 7;
-                            }
-
-                            string maSachMoi = layMaSachMoiTheoISBN(ISBN);
-                            string viTri = "";
-                            while (true) {
-                                gotoXY(toaDoX(28), toaDoY(dong));
-                                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-                                cout << "Huong dan nhap vi tri: Ngan-Ke (VD: A1-B2)" << string(10, ' ');
-                                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-
-                                gotoXY(toaDoX(28), toaDoY(dong + 1));
-                                cout << "Vi tri cho " << maSachMoi << ": " << string(35, ' ');
-                                gotoXY(toaDoX(43 + (int)maSachMoi.length()), toaDoY(dong + 1));
-                                getline(cin, viTri);
-                                viTri = chuanHoaViTriNganKe(viTri);
-
-                                if (viTri.empty()) {
-                                    baoLoiNhapDauSach("Vi tri khong duoc de trong");
-                                }
-                                else if (!hopLeViTriNganKe(viTri)) {
-                                    baoLoiNhapDauSach("Vi tri phai theo dang Ngan-Ke (VD: A1-B2)");
-                                }
-                                else if (viTriDaTonTai(viTri)) {
-                                    baoLoiNhapDauSach("Vi tri nay da co sach");
-                                }
-                                else {
-                                    break;
-                                }
-                            }
-
-                            if (themSachVaoDauSach(ISBN, viTri)) {
-                                daThem++;
-                                gotoXY(toaDoX(28), toaDoY(dong + 2));
-                                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-                                cout << "Da tao ma " << maSachMoi << " tai vi tri " << viTri;
-                                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-                                dong += 3;
-                            }
-                        }
-
-                        gotoXY(toaDoX(28), toaDoY(dong + 1));
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-                        cout << "Hoan tat: da them " << daThem << "/" << soCuon << " cuon sach.";
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-                    }
-                }
-                dungManHinh();
-            }
+			    xoaManHinh();
+			    veKhung("NHAP SACH (THEM SACH CON)");
+			
+			    while (kbhit()) _getch();
+			
+			    string ISBN = nhapISBNTheoTenRealtime("CHON DAU SACH DE NHAP SACH");
+			
+			    xoaManHinh();
+			    veKhung("NHAP SACH (THEM SACH CON)");
+			
+			    if (ISBN.empty()) {
+			
+			        gotoXY(toaDoX(28), toaDoY(6));
+			        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+			        cout << "Chua chon dau sach!";
+			        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+			
+			        dongCuoiNoiDung = toaDoY(6);
+			    }
+			    else {
+			
+			        int index = timViTriDauSach(ISBN);
+			
+			        if (index == -1) {
+			
+			            gotoXY(toaDoX(28), toaDoY(6));
+			            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+			            cout << "Khong tim thay ISBN nay!";
+			            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+			
+			            dongCuoiNoiDung = toaDoY(6);
+			        }
+			        else {
+			
+			            gotoXY(toaDoX(28), toaDoY(4));
+			            cout << "ISBN    : " << dsDauSach[index]->ISBN;
+			
+			            gotoXY(toaDoX(28), toaDoY(5));
+			            cout << "Dau sach: "
+			                 << catTheoKhung(dsDauSach[index]->tenSach);
+			
+			            int soCuon =
+			                nhapSoNguyenDuongHopLe(
+			                    "So cuon muon them",
+			                    7,
+			                    1,
+			                    100
+			                );
+			
+			            int dong = 9;
+			            int daThem = 0;
+			
+			            for (int i = 0; i < soCuon; i++) {
+			
+			                string maSachMoi =
+			                    layMaSachMoiTheoISBN(ISBN);
+			
+			                string viTri;
+			
+			                while (true) {
+			
+			                    gotoXY(toaDoX(28), toaDoY(dong));
+			                    cout << string(khung_W - 8, ' ');
+			
+			                    gotoXY(toaDoX(28), toaDoY(dong));
+			                    SetConsoleTextAttribute(
+			                        GetStdHandle(STD_OUTPUT_HANDLE),
+			                        8
+			                    );
+			                    cout << "Huong dan nhap vi tri: Ngan-Ke (VD: A1-B2)";
+			                    SetConsoleTextAttribute(
+			                        GetStdHandle(STD_OUTPUT_HANDLE),
+			                        7
+			                    );
+			
+			                    gotoXY(toaDoX(28), toaDoY(dong + 1));
+			                    cout << string(khung_W - 8, ' ');
+			
+			                    gotoXY(toaDoX(28), toaDoY(dong + 1));
+			                    cout << "Vi tri cho "
+			                         << maSachMoi
+			                         << ": ";
+			
+			                    getline(cin, viTri);
+			                    viTri = chuanHoaViTriNganKe(viTri);
+			
+			                    if (viTri.empty())
+			                        baoLoiNhapDauSach(
+			                            "Vi tri khong duoc de trong"
+			                        );
+			                    else if (!hopLeViTriNganKe(viTri))
+			                        baoLoiNhapDauSach(
+			                            "Vi tri phai theo dang Ngan-Ke (VD: A1-B2)"
+			                        );
+			                    else if (viTriDaTonTai(viTri))
+			                        baoLoiNhapDauSach(
+			                            "Vi tri nay da co sach"
+			                        );
+			                    else
+			                        break;
+			                }
+			
+			                if (themSachVaoDauSach(ISBN, viTri)) {
+			
+			                    daThem++;
+			
+			                    gotoXY(toaDoX(28), toaDoY(dong + 2));
+			
+			                    SetConsoleTextAttribute(
+			                        GetStdHandle(STD_OUTPUT_HANDLE),
+			                        10
+			                    );
+			
+			                    cout << "Da tao ma "
+			                         << maSachMoi
+			                         << " tai vi tri "
+			                         << viTri
+			                         << string(20, ' ');
+			
+			                    SetConsoleTextAttribute(
+			                        GetStdHandle(STD_OUTPUT_HANDLE),
+			                        7
+			                    );
+			
+			                    dong += 4;
+			                }
+			            }
+			
+			            gotoXY(toaDoX(28), toaDoY(dong + 1));
+			
+			            SetConsoleTextAttribute(
+			                GetStdHandle(STD_OUTPUT_HANDLE),
+			                10
+			            );
+			
+			            cout << "Hoan tat: da them "
+			                 << daThem
+			                 << "/"
+			                 << soCuon
+			                 << " cuon sach.";
+			
+			            SetConsoleTextAttribute(
+			                GetStdHandle(STD_OUTPUT_HANDLE),
+			                7
+			            );
+			
+			            dongCuoiNoiDung = toaDoY(dong + 1);
+			        }
+			    }
+			
+			    dungManHinh();
+			}
 
             else if (s == 2) { 
                 veKhung("DANH SACH CO TRONG KHO");
@@ -2777,17 +3113,15 @@ int main() {
 
         if (tk == 0) {
             string tuKhoa = nhapTenSachRealtime();
-
+            xoaManHinh();
             timSachTheoTen(tuKhoa);
-
             dungManHinh();
         }
         else if (tk == 1) {
             string theLoai = nhapTheLoaiRealtime();
-
-            timSachTheoTheLoai(theLoai);
-
-            dungManHinh();
+				xoaManHinh();    		
+				timSachTheoTheLoai(theLoai);	
+				dungManHinh();
         }
         else break;
     }
@@ -2836,23 +3170,25 @@ int main() {
     else if (chinh == 4) {
         veKhung("THOAT CHUONG TRINH");
 
-        ofstream outFile("output.txt", ios::out);
+        ofstream outFile("docgia.txt", ios::out);
         gotoXY(khung_X + 5, khung_Y + 5);
 
         if (!outFile.is_open()) {
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-            cout << ">>> Loi tao file output.txt!";
+            cout << ">>> Loi tao file docgia.txt!";
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         } else {
             ghiNodeRaFile_NLR(root, outFile);
             outFile.close();
-
+            luuFileDauSach();
+			luuFileSach();
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-            cout << ">>> Da luu du lieu Doc gia vao file output.txt!";
+            
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         }
 
         gotoXY(khung_X + 5, khung_Y + 7);
+        
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
         cout << "Cam on ban da su dung chuong trinh.";
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
